@@ -1,7 +1,6 @@
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
-const _ = db.command;
 
 const ADMIN_OPENIDS = []; // 请在云环境中配置管理员openid
 
@@ -9,7 +8,7 @@ async function isAdmin(openid) {
   return ADMIN_OPENIDS.includes(openid);
 }
 
-async function listGoods(params) {
+async function listGoods(params = {}) {
   const { pageNum = 1, pageSize = 20, categoryId } = params;
   const skip = (pageNum - 1) * pageSize;
   const where = { isOnSale: true };
@@ -34,7 +33,7 @@ async function listGoods(params) {
   };
 }
 
-async function getGoodDetail(params) {
+async function getGoodDetail(params = {}) {
   const { spuId } = params;
   const res = await db.collection('goods').where({ spuId }).get();
   if (res.data.length === 0) {
@@ -43,10 +42,9 @@ async function getGoodDetail(params) {
   return res.data[0];
 }
 
-async function searchGoods(params) {
+async function searchGoods(params = {}) {
   const { keyword, pageNum = 1, pageSize = 20 } = params;
   const skip = (pageNum - 1) * pageSize;
-  const _ = db.command;
   const where = {
     isOnSale: true,
     title: db.RegExp({ regexp: keyword, options: 'i' }),
@@ -65,18 +63,27 @@ async function searchGoods(params) {
   };
 }
 
-async function createGood(openid, params) {
-  if (!(await isAdmin(openid))) {
+async function createGood(openid, params = {}) {
+  if (!isAdmin(openid)) {
     return { success: false, message: '无权限操作' };
   }
+  const allowedFields = ['title', 'primaryImage', 'images', 'descImages', 'video',
+    'minSalePrice', 'maxSalePrice', 'minLinePrice', 'maxLinePrice',
+    'categoryId', 'categoryName', 'stock', 'specList', 'skuList', 'tags', 'sort', 'isOnSale'];
+  const data = {};
+  allowedFields.forEach((key) => {
+    if (params[key] !== undefined) {
+      data[key] = params[key];
+    }
+  });
   const spuId = 'GOOD' + Date.now();
   const now = db.serverDate();
   const res = await db.collection('goods').add({
     data: {
-      ...params,
+      ...data,
       spuId,
       soldNum: 0,
-      isOnSale: params.isOnSale !== false,
+      isOnSale: data.isOnSale !== false,
       createdAt: now,
       updatedAt: now,
     },
@@ -84,19 +91,34 @@ async function createGood(openid, params) {
   return { success: true, _id: res._id, spuId };
 }
 
-async function updateGood(openid, params) {
-  if (!(await isAdmin(openid))) {
+async function updateGood(openid, params = {}) {
+  if (!isAdmin(openid)) {
     return { success: false, message: '无权限操作' };
   }
-  const { _id, ...updateData } = params;
+  const { _id } = params;
+  if (!_id) {
+    return { success: false, message: '缺少商品ID' };
+  }
+  const allowedFields = ['title', 'primaryImage', 'images', 'descImages', 'video',
+    'minSalePrice', 'maxSalePrice', 'minLinePrice', 'maxLinePrice',
+    'categoryId', 'categoryName', 'stock', 'specList', 'skuList', 'tags', 'sort', 'isOnSale'];
+  const updateData = {};
+  allowedFields.forEach((key) => {
+    if (params[key] !== undefined) {
+      updateData[key] = params[key];
+    }
+  });
   updateData.updatedAt = db.serverDate();
   await db.collection('goods').doc(_id).update({ data: updateData });
   return { success: true };
 }
 
-async function deleteGood(openid, params) {
-  if (!(await isAdmin(openid))) {
+async function deleteGood(openid, params = {}) {
+  if (!isAdmin(openid)) {
     return { success: false, message: '无权限操作' };
+  }
+  if (!params._id) {
+    return { success: false, message: '缺少商品ID' };
   }
   await db.collection('goods').doc(params._id).update({
     data: { isOnSale: false, updatedAt: db.serverDate() },
@@ -108,13 +130,17 @@ exports.main = async (event) => {
   const { action, params } = event;
   const { OPENID } = cloud.getWXContext();
 
-  switch (action) {
-    case 'list': return await listGoods(params);
-    case 'detail': return await getGoodDetail(params);
-    case 'search': return await searchGoods(params);
-    case 'create': return await createGood(OPENID, params);
-    case 'update': return await updateGood(OPENID, params);
-    case 'delete': return await deleteGood(OPENID, params);
-    default: return { success: false, message: '未知操作' };
+  try {
+    switch (action) {
+      case 'list': return await listGoods(params);
+      case 'detail': return await getGoodDetail(params);
+      case 'search': return await searchGoods(params);
+      case 'create': return await createGood(OPENID, params);
+      case 'update': return await updateGood(OPENID, params);
+      case 'delete': return await deleteGood(OPENID, params);
+      default: return { success: false, message: '未知操作' };
+    }
+  } catch (err) {
+    return { success: false, message: err.message || '服务器错误' };
   }
 };
