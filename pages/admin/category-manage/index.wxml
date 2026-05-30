@@ -1,0 +1,62 @@
+<view class="container">
+  <view class="add-btn" bindtap="onAddCategory">新增分类</view>
+
+  <view class="category-list">
+    <view class="category-group" wx:for="{{categoryList}}" wx:key="_id" wx:if="{{item.level === 1}}">
+      <view class="category-item">
+        <image wx:if="{{item.thumbnail}}" src="{{item.thumbnail}}" class="cat-img" mode="aspectFill" />
+        <view class="cat-info">
+          <view class="cat-name">{{item.name}}</view>
+          <view class="cat-sort">排序: {{item.sort}}</view>
+        </view>
+        <view class="cat-actions">
+          <view class="btn-edit" bindtap="onEditCategory" data-id="{{item._id}}">编辑</view>
+          <view class="btn-add-sub" bindtap="onAddSubCategory" data-id="{{item.categoryId}}">添加子分类</view>
+          <view class="btn-delete" bindtap="onDeleteCategory" data-id="{{item._id}}">删除</view>
+        </view>
+      </view>
+
+      <view class="sub-category-list">
+        <view class="sub-category-item" wx:for="{{getSubCategories(item.categoryId)}}" wx:for-item="sub" wx:key="_id">
+          <view class="sub-name">{{sub.name}}</view>
+          <view class="sub-actions">
+            <view class="btn-edit" bindtap="onEditCategory" data-id="{{sub._id}}">编辑</view>
+            <view class="btn-delete" bindtap="onDeleteCategory" data-id="{{sub._id}}">删除</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{categoryList.length === 0}}">暂无分类</view>
+
+  <!-- 编辑弹窗 -->
+  <view class="modal-mask" wx:if="{{showModal}}" bindtap="onCloseModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-title">{{isEdit ? '编辑分类' : '新增分类'}}</view>
+
+      <view class="form-item">
+        <view class="form-label">分类名称</view>
+        <input class="form-input" placeholder="请输入分类名称" value="{{editName}}" bindinput="onInputName" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">排序</view>
+        <input class="form-input" type="number" placeholder="排序值越小越靠前" value="{{editSort}}" bindinput="onInputSort" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">分类图标</view>
+        <view class="thumb-area" bindtap="onChooseThumbnail">
+          <image wx:if="{{editThumbnail}}" src="{{editThumbnail}}" mode="aspectFill" class="thumb-preview" />
+          <view wx:else class="upload-placeholder">+</view>
+        </view>
+      </view>
+
+      <view class="modal-actions">
+        <view class="modal-btn cancel" bindtap="onCloseModal">取消</view>
+        <view class="modal-btn confirm" bindtap="onSaveCategory">确定</view>
+      </view>
+    </view>
+  </view>
+</view>

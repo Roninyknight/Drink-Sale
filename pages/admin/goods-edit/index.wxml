@@ -1,0 +1,72 @@
+<view class="container">
+  <view class="form-group">
+    <view class="form-label">商品名称 *</view>
+    <input class="form-input" placeholder="请输入商品名称" value="{{title}}" bindinput="onInputTitle" />
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">商品分类</view>
+    <picker mode="selector" range="{{categoryList}}" range-key="name" value="{{categoryIndex}}" bindchange="onCategoryChange">
+      <view class="form-picker">{{categoryName || '请选择分类'}}</view>
+    </picker>
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">售价(元) *</view>
+    <input class="form-input" type="digit" placeholder="请输入售价" value="{{minSalePrice}}" bindinput="onInputMinPrice" />
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">最高售价(元)</view>
+    <input class="form-input" type="digit" placeholder="多规格商品填写" value="{{maxSalePrice}}" bindinput="onInputMaxPrice" />
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">划线价(元)</view>
+    <input class="form-input" type="digit" placeholder="原价" value="{{minLinePrice}}" bindinput="onInputMinLine" />
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">库存</view>
+    <input class="form-input" type="number" placeholder="请输入库存数量" value="{{stock}}" bindinput="onInputStock" />
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">主图</view>
+    <view class="image-area" bindtap="onChoosePrimaryImage">
+      <image wx:if="{{primaryImage}}" src="{{primaryImage}}" mode="aspectFill" class="primary-img" />
+      <view wx:else class="upload-placeholder">+</view>
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">商品图（最多9张）</view>
+    <view class="image-list">
+      <view class="image-item" wx:for="{{images}}" wx:key="*this">
+        <image src="{{item}}" mode="aspectFill" class="thumb-img" />
+        <view class="remove-btn" bindtap="onRemoveImage" data-index="{{index}}">×</view>
+      </view>
+      <view class="upload-placeholder small" wx:if="{{images.length < 9}}" bindtap="onChooseImages">+</view>
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">详情图</view>
+    <view class="image-list">
+      <view class="image-item" wx:for="{{descImages}}" wx:key="*this">
+        <image src="{{item}}" mode="aspectFill" class="thumb-img" />
+        <view class="remove-btn" bindtap="onRemoveDescImage" data-index="{{index}}">×</view>
+      </view>
+      <view class="upload-placeholder small" bindtap="onChooseDescImages">+</view>
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">上架状态</view>
+    <switch checked="{{isOnSale}}" bindchange="onToggleSale" />
+  </view>
+
+  <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="onSubmit">
+    {{submitting ? '提交中...' : (isEdit ? '保存修改' : '添加商品')}}
+  </view>
+</view>

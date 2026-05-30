@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索商品" value="{{keyword}}" bindinput="onSearchInput" bindconfirm="onSearch" />
+    <view class="search-btn" bindtap="onSearch">搜索</view>
+  </view>
+
+  <view class="action-bar">
+    <view class="action-btn primary" bindtap="onAddGoods">新增商品</view>
+    <view class="action-btn" bindtap="onManageCategories">分类管理</view>
+  </view>
+
+  <view class="goods-list">
+    <view class="goods-item" wx:for="{{goodsList}}" wx:key="_id">
+      <image class="goods-img" src="{{item.primaryImage}}" mode="aspectFill" />
+      <view class="goods-info">
+        <view class="goods-title">{{item.title}}</view>
+        <view class="goods-price">¥{{item.minSalePrice / 100}}</view>
+        <view class="goods-stock">库存: {{item.stock || 0}}</view>
+        <view class="goods-status {{item.isOnSale ? 'on' : 'off'}}">{{item.isOnSale ? '在售' : '已下架'}}</view>
+      </view>
+      <view class="goods-actions">
+        <view class="btn-edit" bindtap="onEditGoods" data-id="{{item._id}}">编辑</view>
+        <view class="btn-toggle" bindtap="onToggleSale" data-id="{{item._id}}" data-sale="{{item.isOnSale}}">
+          {{item.isOnSale ? '下架' : '上架'}}
+        </view>
+        <view class="btn-delete" bindtap="onDeleteGoods" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:if="{{!loading && goodsList.length === 0}}">暂无商品</view>
+</view>

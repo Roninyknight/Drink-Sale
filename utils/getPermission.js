@@ -1,0 +1,44 @@
+const getPermission = ({ code, name }) => {
+  return new Promise((resolve, reject) => {
+    wx.getSetting({
+      success: (res) => {
+        if (res.authSetting && res.authSetting[code] === false) {
+          wx.showModal({
+            title: `获取${name}失败`,
+            content: `获取${name}失败，请在【右上角】-小程序【设置】项中，将【${name}】开启。`,
+            confirmText: '去设置',
+            confirmColor: '#FA550F',
+            cancelColor: '#999999',
+            success(res) {
+              if (res.confirm) {
+                wx.openSetting({
+                  success(settingRes) {
+                    if (settingRes.authSetting[code] === true) {
+                      resolve();
+                    } else {
+                      reject();
+                    }
+                  },
+                });
+              } else {
+                reject();
+              }
+            },
+            fail() {
+              reject();
+            },
+          });
+        } else {
+          resolve();
+        }
+      },
+      fail() {
+        reject();
+      },
+    });
+  });
+};
+
+module.exports = {
+  getPermission,
+};
