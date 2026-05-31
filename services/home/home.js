@@ -13,27 +13,27 @@ function mockFetchHome() {
           key: 0,
         },
         {
-          text: '夏日防晒',
+          text: '白酒特惠',
           key: 1,
         },
         {
-          text: '二胎大作战',
+          text: '红酒精选',
           key: 2,
         },
         {
-          text: '人气榜',
+          text: '洋酒专场',
           key: 3,
         },
         {
-          text: '好评榜',
+          text: '人气榜',
           key: 4,
         },
         {
-          text: 'RTX 30',
+          text: '好评榜',
           key: 5,
         },
         {
-          text: '手机也疯狂',
+          text: '新品上架',
           key: 6,
         },
       ],
