@@ -1,4 +1,5 @@
 import updateManager from './common/updateManager';
+import { cloudEnvId } from './config/env';
 
 App({
   onLaunch: function () {
@@ -7,7 +8,7 @@ App({
       return;
     }
     wx.cloud.init({
-      env: 'YOUR_CLOUD_ENV',
+      env: cloudEnvId,
       traceUser: true,
     });
   },

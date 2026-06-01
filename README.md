@@ -204,22 +204,34 @@ git clone <repository-url>
 npm install
 ```
 
-3. 在微信开发者工具中导入项目
+3. 配置本地环境
+
+   复制配置模板文件并填入你自己的值：
+
+   ```bash
+   cp project.config.json.example project.config.json
+   cp config/env.example.js config/env.js
+   ```
+
+   - `project.config.json`：填入你的微信小程序 AppID
+   - `config/env.js`：填入你的云环境 ID（如需使用云开发）
+
+4. 在微信开发者工具中导入项目
 
    - 选择项目根目录
-   - 填写 AppID：`YOUR_APPID`
+   - 填写 AppID：`请填入你的AppID`
 
-4. 构建 npm
+5. 构建 npm
 
    - 在开发者工具中点击 "工具" -> "构建 npm"
 
-5. 配置云环境（可选，使用云数据库时需要）
+6. 配置云环境（可选，使用云数据库时需要）
 
    - 在开发者工具中点击 "云开发" 开通云环境
-   - 云环境 ID：`YOUR_CLOUD_ENV`
+   - 云环境 ID：`请填入你的云环境ID`
    - 创建 `goods` 和 `categories` 数据集合
 
-6. 编译运行
+7. 编译运行
 
    - 点击 "编译" 按钮即可预览
 

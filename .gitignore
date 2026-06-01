@@ -3,3 +3,17 @@ node_modules/
 *.local
 miniprogram_npm/
 cloudfunctions/*/node_modules/
+
+# 开发者本地配置（含 AppID 等敏感信息）
+project.config.json
+project.private.config.json
+
+# 环境配置
+config/env.js
+
+# 编辑器配置
+.vscode/
+.idea/
+
+# 系统文件
+Thumbs.db
